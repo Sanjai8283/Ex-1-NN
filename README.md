@@ -1,7 +1,6 @@
-<H3>ENTER YOUR NAME</H3>
-<H3>ENTER YOUR REGISTER NO.</H3>
+<H3>ENTER YOUR NAME: AADHITHYAA L </H3>
+<H3>ENTER YOUR REGISTER NO: 212224220003</H3>
 <H3>EX. NO.1</H3>
-<H3>DATE</H3>
 <H1 ALIGN =CENTER> Introduction to Kaggle and Data preprocessing</H1>
 
 ## AIM:
@@ -37,85 +36,117 @@ STEP 5:Normalizing the data<BR>
 STEP 6:Splitting the data into test and train<BR>
 
 ##  PROGRAM:
-TYPE YOUR CODE HERE
+
+### Import libraries
+```PYTHON
 import pandas as pd
-import io
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+import seaborn as sns   # for outlier detection
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
+```
 
-data = pd.read_csv("Churn_Modelling.csv")
-print(data.head())
-print(data.tail())
+### Read the dataset directly
+```PYTHON
+df = pd.read_csv('Churn_Modelling.csv')
+print("First 5 rows of the dataset:")
+df.head()
+```
 
-X=data.iloc[:,:-1].values
+### Find missing values
+```PYTHON
+print(df.isnull().sum())
+```
+
+### Identify categorical columns
+```PYTHON
+categorical_cols = df.select_dtypes(include=['object']).columns
+print("\nCategorical columns:", categorical_cols.tolist())
+```
+
+### Apply Label Encoding to categorical columns
+```PYTHON
+label_encoder = LabelEncoder()
+for col in categorical_cols:
+    df[col] = label_encoder.fit_transform(df[col])
+
+print("\nData after encoding:")
+print(df.head(5))
+```
+### Handling missing values only for numeric columns
+```PYTHON
+for col in df.select_dtypes(include=['float64', 'int64']).columns:
+    df[col].fillna(df[col].mean().round(1), inplace=True)
+
+df.isnull().sum()
+```
+
+### Detect Outliers (example using seaborn)
+```PYTHON
+print("\nDetecting outliers (example: CreditScore column):")
+sns.boxplot(x=df['CreditScore'])
+```
+
+### Example statistics for 'CreditScore'
+```PYTHON
+print("\nStatistics for 'CreditScore':")
+df['CreditScore'].describe()
+```
+
+### Splitting features (X) and labels (y)
+```PYTHON
+X = df.drop('Exited', axis=1).values  # Features (drop target column)
+y = df['Exited'].values   
+
+print("\nFeature Matrix (X):")
 print(X)
-
-y=data.iloc[:,-1].values
+print("\nLabel Vector (y):")
 print(y)
+```
+### Normalizing the features
+```PYTHON
+scaler = MinMaxScaler()
+X_normalized = scaler.fit_transform(X)
+```
 
-data.info()
+### First 5 rows after normalization
+```PYTHON
+pd.DataFrame(X_normalized, columns=df.columns[:-1]).head()
+```
 
-print("Missing Values: \n ",data.isnull().sum())
+### Splitting into Training and Testing Sets
+```PYTHON
+X_train, X_test, y_train, y_test = train_test_split(
+    X_normalized, y, test_size=0.2, random_state=42
+)
 
-print("Duplicate values:\n ")
-print(data.duplicated())
-
-data.describe()
-
-data = data.drop(['Surname', 'Geography','Gender'], axis=1)
-data.head()
-
-scaler=MinMaxScaler()
-df1=pd.DataFrame(scaler.fit_transform(data))
-print("Normalized data \n" , df1)
-
-X = data.drop('Exited', axis=1)  
-y = data['Exited'] 
-
-X_train ,X_test ,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=42)
-print("Training data")
-print(X_train)
-print(y_train)
-
-print("Testing data")
-print(X_test)
-print(y_test)
-print("Length of X_test: ", len(X_test))
+print("\nShapes of Training and Testing sets:")
+print("X_train:", X_train.shape)
+print("X_test:", X_test.shape)
+print("y_train:", y_train.shape)
+print("y_test:", y_test.shape)
+```
 
 ## OUTPUT:
-SHOW YOUR OUTPUT HERE
-df.head()
-<img width="784" height="704" alt="Screenshot 2026-01-27 161224" src="https://github.com/user-attachments/assets/f8f43061-e8b8-4a90-b7dc-d061ec3adb95" />
+<img width="1314" height="299" alt="image" src="https://github.com/user-attachments/assets/da779765-f163-409e-8b89-90bc62bf764d" />
 
-df.tail()
-<img width="653" height="345" alt="Screenshot 2026-01-27 162216" src="https://github.com/user-attachments/assets/18ce23da-18b0-4b14-af8e-c2aa8a958b55" />
+<img width="272" height="353" alt="image" src="https://github.com/user-attachments/assets/6f50ed2b-1bf9-46c4-9c17-1e1b8c0b42d3" />
 
-X & Y Values
-<img width="472" height="151" alt="Screenshot 2026-01-27 162519" src="https://github.com/user-attachments/assets/6bf4d678-0498-49e6-9343-6f7a0d34bb69" />
+<img width="616" height="30" alt="image" src="https://github.com/user-attachments/assets/a94f0c7a-6ed4-484a-9d12-c4c09fa9d959" />
 
-Data.info()
-<img width="425" height="370" alt="Screenshot 2026-01-27 162639" src="https://github.com/user-attachments/assets/623c4440-1f9b-4d88-a83f-06e119d9ff54" />
+<img width="787" height="498" alt="image" src="https://github.com/user-attachments/assets/bab11f8b-d66f-4554-8461-cc5fd5c847c0" />
 
-Missing Values
-<img width="337" height="287" alt="Screenshot 2026-01-27 162703" src="https://github.com/user-attachments/assets/2f96c53c-be68-436a-b0a9-5bd24cacbe33" />
+<img width="342" height="596" alt="image" src="https://github.com/user-attachments/assets/3f4c8b15-ebef-478c-a777-190fe25eadd5" />
 
-Duplicate Value
-<img width="1353" height="547" alt="Screenshot 2026-01-27 162759" src="https://github.com/user-attachments/assets/9d8332e9-c787-4c18-bb6f-a3fcf88d948a" />
+<img width="747" height="580" alt="image" src="https://github.com/user-attachments/assets/3eb2bf96-5183-479d-a4a8-360df6a66202" />
 
-Normalized data 
-<img width="682" height="485" alt="Screenshot 2026-01-27 162856" src="https://github.com/user-attachments/assets/b579210f-bf5e-438a-b276-85092f80301e" />
+<img width="410" height="463" alt="image" src="https://github.com/user-attachments/assets/71db54ed-4748-4cfe-9399-8bff5b26b414" />
 
+<img width="758" height="444" alt="image" src="https://github.com/user-attachments/assets/b01e1cd0-3a4c-4307-821e-0e5b620c503a" />
 
+<img width="1343" height="310" alt="image" src="https://github.com/user-attachments/assets/a7bc5719-3826-46fa-b4bb-3db26ce24657" />
 
-
-
-
-
-
-
-
-
+<img width="830" height="327" alt="image" src="https://github.com/user-attachments/assets/e15d1aa6-6202-4c43-8308-ef951a9ea6e4" />
 
 
 ## RESULT:
